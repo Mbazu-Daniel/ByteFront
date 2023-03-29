@@ -22,9 +22,12 @@ const createUser = asyncHandler(async (req, res) => {
 
 // Login user
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, username } = req.body;
   // check if user already exists
-  const user = await User.findOne({ email: email });
+  // check if user already exists
+  const user = await User.findOne({
+    $or: [{ email: email }, { username: username }],
+  });
 
   if (user && (await user.comparePassword(password))) {
     res.status(201).json({
@@ -39,7 +42,33 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
+// get all users
+const allUsers = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.find();
+    res.json({
+      user,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+// get single user
+const singleUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id);
+    res.json({
+      user,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 module.exports = {
   createUser,
   loginUser,
+  allUsers,
+  singleUser,
 };
