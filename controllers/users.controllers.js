@@ -78,10 +78,35 @@ const deleteUser = asyncHandler(async (req, res) => {
   }
 });
 
+// update user
+const updateUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const updateFields = {
+      username: req?.body?.username,
+      email: req?.body?.email,
+      avatar: req?.body?.avatar,
+      bio: req?.body?.bio,
+    };
+
+    // if (req?.body?.password) {
+    //   updateFields.password = req.body.password;
+    // }
+    const user = await User.findByIdAndUpdate(id, updateFields, {
+      new: true,
+    });
+    res.status(201).json({ user });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 module.exports = {
   createUser,
   loginUser,
   allUsers,
   singleUser,
   deleteUser,
+  updateUser,
 };
